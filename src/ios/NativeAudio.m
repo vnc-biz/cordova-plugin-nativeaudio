@@ -30,22 +30,25 @@ NSString* INFO_VOLUME_CHANGED = @"(NATIVE AUDIO) Volume changed.";
     self.fadeMusic = NO;
 
     AudioSessionInitialize(NULL, NULL, nil , nil);
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    // we activate the audio session after the options to mix with others is set
-    [session setActive: NO error: nil];
-    NSError *setCategoryError = nil;
 
-    // Allows the application to mix its audio with audio from other apps.
-    if (![session setCategory:AVAudioSessionCategoryAmbient
-                  withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                        error:&setCategoryError]) {
+    AVAudioSession* session = [AVAudioSession
+                              sharedInstance];
+
+    // Don't activate the audio session yet
+    [session setActive:NO error:NULL];
+
+    // Play music even in background and dont stop playing music
+    // even another app starts playing sound
+    if (![session setCategory:AVAudioSessionCategoryPlayback
+            withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                  error:NULL]) {
 
         NSLog (@"Error setting audio session category.");
         return;
     }
 
-    [session setActive: YES error: nil];
-    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+    // Active the audio session
+    [session setActive:YES error:NULL];
 }
 
 - (void) parseOptions:(NSDictionary*) options
